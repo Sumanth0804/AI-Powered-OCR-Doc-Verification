@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enhanced Verification - Aadhaar Authentication</title>
+
+    <!-- FIX THEME FLASH + SESSION CHECK -->
+    <script>
+        (function () {
+            if (localStorage.getItem("theme") === "dark") {
+                document.documentElement.classList.add("dark");
+            }
+        })();
+
+        // SESSION PROTECTION
+        (function () {
+            const user = localStorage.getItem("user_name");
+            if (!user) {
+                window.location.href = "login.html";
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+<!-- UNIVERSAL HEADER -->
+<header>
+    <h1 class="logo">Aadhaar Authentication</h1>
+
+    <div class="header-right">
+        <nav>
+            <a href="index.html" id="nav-home">Home</a>
+            <a href="dashboard.html" id="nav-dashboard">Dashboard</a>
+            <a href="verify-enhanced.html" id="nav-verify">Verify</a>
+            <a href="history.html" id="nav-history">History</a>
+            <a href="analytics.html" id="nav-analytics">Analytics</a>
+            <a href="about.html" id="nav-about">About</a>
+            <a href="services.html" id="nav-services">Services</a>
+            <a href="contact.html" id="nav-contact">Contact</a>
+            <a id="logoutLink" href="#">Logout</a>
+        </nav>
+
+        <div class="theme-toggle">
+            <button id="themeBtn" class="theme-btn">🌙</button>
+            <div id="themeMenu" class="theme-menu hidden">
+                <div class="theme-option" data-theme="light">☀️ Light Mode</div>
+                <div class="theme-option" data-theme="dark">🌙 Dark Mode</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- AUTO ACTIVE NAV -->
+<script>
+    const page = window.location.pathname.split("/").pop();
+    const navMap = {
+        "index.html": "nav-home",
+        "dashboard.html": "nav-dashboard",
+        "verify-enhanced.html": "nav-verify",
+        "history.html": "nav-history",
+        "analytics.html": "nav-analytics",
+        "about.html": "nav-about",
+        "services.html": "nav-services",
+        "contact.html": "nav-contact"
+    };
+    if (navMap[page]) {
+        document.getElementById(navMap[page]).classList.add("active");
+    }
+</script>
+
+<!-- MAIN CONTENT -->
+<main class="container">
+
+    <section class="card">
+        <h2>Enhanced Verification</h2>
+
+        <form id="enhancedForm">
+
+            <div class="form-row">
+
+                <!-- FRONT IMAGE -->
+                <div>
+                    <label>Front Image (JPG / PNG)</label>
+                    <input id="previewFrontInput" type="file" accept="image/*" />
+                    <div class="img-preview" id="previewFront"></div>
+                </div>
+
+                <!-- BACK IMAGE -->
+                <div>
+                    <label>Back Image (Optional)</label>
+                    <input id="previewBackInput" type="file" accept="image/*" />
+                    <div class="img-preview" id="previewBack"></div>
+                </div>
+
+            </div>
+
+            <!-- QR CHECK -->
+            <div style="margin-top:14px;">
+                <label>
+                    <input type="checkbox" id="qrCheck" />
+                    Enable QR Check
+                </label>
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <div style="margin-top:20px;">
+                <button type="submit" class="btn" id="runVerify">Run Verification</button>
+            </div>
+
+        </form>
+
+        <!-- RESULT OUTPUT -->
+        <div id="verifyResult" style="margin-top:24px;"></div>
+
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2025 Aadhaar Authentication | All Rights Reserved.</p>
+</footer>
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="js/config.js"></script>
+<script src="js/script.js"></script>
+
+
+<script>
+// IMAGE PREVIEW
+function previewImage(input, previewBox) {
+    input.addEventListener("change", () => {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => previewBox.innerHTML = `<img src="${e.target.result}" />`;
+            reader.readAsDataURL(input.files[0]);
+        }
+    });
+}
+
+previewImage(document.getElementById("previewFrontInput"), document.getElementById("previewFront"));
+previewImage(document.getElementById("previewBackInput"), document.getElementById("previewBack"));
+
+
+// REAL VERIFICATION API CALL (FIXED!!)
+document.getElementById("enhancedForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const frontFile = document.getElementById("previewFrontInput").files[0];
+    const backFile = document.getElementById("previewBackInput").files[0];
+    const qrFlag = document.getElementById("qrCheck").checked;
+
+    if (!frontFile) {
+        Swal.fire("Missing Image", "Please upload the front image.", "warning");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("front", frontFile);
+    if (backFile) formData.append("back", backFile);
+    formData.append("qr", qrFlag ? "1" : "0");
+
+    Swal.fire({
+        title: "Processing...",
+        text: "Running AI verification",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/verify_single`, {
+            method: "POST",
+            body: formData
+        });
+
+        const json = await res.json();
+        Swal.close();
+
+        if (!json.success) {
+            Swal.fire("Error", json.error || "Verification failed.", "error");
+            return;
+        }
+
+        const result = json.result;
+
+        document.getElementById("verifyResult").innerHTML = `
+            <div class="result-card">
+                <h3>Verification Result</h3>
+                <p>Status: <strong>${result.status || result.overall_assessment || "Unknown"}</strong></p>
+                <p>Fraud Score: <strong>${result.fraud_score ?? "N/A"}</strong></p>
+            </div>
+        `;
+
+        // SAVE HISTORY (standardized)
+        let history = JSON.parse(localStorage.getItem("aadhaar_history") || "[]");
+        history.push({
+            status: result.status || result.overall_assessment || "Unknown",
+            fraud_score: result.fraud_score ?? 0,
+            verification_type: "single",
+            time: new Date().toISOString()
+        });
+        localStorage.setItem("aadhaar_history", JSON.stringify(history));
+
+        Swal.fire("Verification Complete", "Result saved to history.", "success");
+
+    } catch (err) {
+        Swal.close();
+        Swal.fire("Error", "Backend unreachable. Check API_BASE_URL.", "error");
+    }
+});
+</script>
+
+
+</body>
+</html>

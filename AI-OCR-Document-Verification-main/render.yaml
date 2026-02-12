@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: aadhaar-fraud-backend
+    env: docker
+    region: oregon    # change to nearest region if you prefer (e.g., "oregon", "fra" etc.)
+    branch: main
+    dockerfilePath: ./Dockerfile
+    plan: starter     # upgrade to "standard" if you need more RAM/CPU
+    autoDeploy: true
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: "8000"
+      - key: GUNICORN_WORKERS
+        value: "1"

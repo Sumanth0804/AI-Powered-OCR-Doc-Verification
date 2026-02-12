@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>History - Aadhaar Authentication</title>
+
+    <!-- FIX THEME FLASH -->
+    <script>
+        (function () {
+            if (localStorage.getItem("theme") === "dark") {
+                document.documentElement.classList.add("dark");
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+<!-- UNIVERSAL HEADER -->
+<header>
+    <h1 class="logo">Aadhaar Authentication</h1>
+
+    <div class="header-right">
+        <nav>
+            <a href="index.html" id="nav-home">Home</a>
+            <a href="dashboard.html" id="nav-dashboard">Dashboard</a>
+            <a href="verify-enhanced.html" id="nav-verify">Verify</a>
+            <a href="history.html" id="nav-history">History</a>
+            <a href="analytics.html" id="nav-analytics">Analytics</a>
+            <a href="about.html" id="nav-about">About</a>
+            <a href="services.html" id="nav-services">Services</a>
+            <a href="contact.html" id="nav-contact">Contact</a>
+            <a id="logoutLink" href="#">Logout</a>
+        </nav>
+
+        <div class="theme-toggle">
+            <button id="themeBtn" class="theme-btn">🌙</button>
+
+            <div id="themeMenu" class="theme-menu hidden">
+                <div class="theme-option" data-theme="light">☀️ Light Mode</div>
+                <div class="theme-option" data-theme="dark">🌙 Dark Mode</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- AUTO-ACTIVE LINK SCRIPT -->
+<script>
+    const page = window.location.pathname.split("/").pop();
+
+    const navMap = {
+        "index.html": "nav-home",
+        "dashboard.html": "nav-dashboard",
+        "verify-enhanced.html": "nav-verify",
+        "history.html": "nav-history",
+        "analytics.html": "nav-analytics",
+        "about.html": "nav-about",
+        "services.html": "nav-services",
+        "contact.html": "nav-contact"
+    };
+
+    if (navMap[page]) {
+        document.getElementById(navMap[page]).classList.add("active");
+    }
+</script>
+
+<!-- MAIN CONTENT -->
+<main class="container">
+
+    <section class="card">
+        <h2>Verification History</h2>
+
+        <div id="historyList">Loading history...</div>
+
+        <div style="margin-top: 14px;">
+            <button class="btn" id="clearHistory">Clear History</button>
+        </div>
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2025 Aadhaar Authentication | All Rights Reserved.</p>
+</footer>
+
+<!-- ALERT LIBRARY -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- ONLY JS FILE -->
+<script src="js/script.js"></script>
+
+<script>
+    /* =========================================
+       LOAD HISTORY FROM LOCAL STORAGE
+    ========================================= */
+    function loadHistory() {
+        const container = document.getElementById("historyList");
+
+        let history = JSON.parse(localStorage.getItem("aadhaar_history") || "[]");
+
+        if (history.length === 0) {
+            container.innerHTML = "<p>No verification history found.</p>";
+            return;
+        }
+
+        container.innerHTML = history
+            .map(item => `
+                <div class="history-item" style="margin-bottom:12px;">
+                    <strong>${item.time || "Unknown Time"}</strong><br>
+                    Status: <span>${item.status}</span><br>
+                    Fraud Score: <strong>${item.fraud}</strong>
+                </div>
+            `)
+            .join("");
+    }
+
+    /* =========================================
+       CLEAR HISTORY BUTTON
+    ========================================= */
+    document.getElementById("clearHistory").addEventListener("click", () => {
+
+        Swal.fire({
+            title: "Clear all history?",
+            text: "This action cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, clear",
+            cancelButtonText: "Cancel"
+        }).then(result => {
+            if (result.isConfirmed) {
+                localStorage.removeItem("aadhaar_history");
+                loadHistory();
+                Swal.fire("History Cleared", "", "success");
+            }
+        });
+    });
+
+    /* =========================================
+       LOGOUT
+    ========================================= */
+    document.getElementById("logoutLink").addEventListener("click", (e) => {
+        e.preventDefault();
+
+        localStorage.removeItem("user_name");
+        localStorage.removeItem("user_role");
+
+        Swal.fire("Logged Out", "You have been logged out.", "success")
+            .then(() => window.location.href = "index.html");
+    });
+
+    /* =========================================
+       INIT PAGE
+    ========================================= */
+    document.addEventListener("DOMContentLoaded", loadHistory);
+</script>
+
+</body>
+</html>

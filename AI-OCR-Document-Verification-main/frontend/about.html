@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About - Aadhaar Authentication</title>
+
+    <!-- FIX FLICKER -->
+    <script>
+        (function () {
+            if (localStorage.getItem("theme") === "dark") {
+                document.documentElement.classList.add("dark");
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+<!-- UNIVERSAL HEADER -->
+<header>
+    <h1 class="logo">Aadhaar Authentication</h1>
+
+    <div class="header-right">
+        <nav>
+            <a href="index.html" id="nav-home">Home</a>
+            <a href="dashboard.html" id="nav-dashboard">Dashboard</a>
+            <a href="verify-enhanced.html" id="nav-verify">Verify</a>
+            <a href="history.html" id="nav-history">History</a>
+            <a href="analytics.html" id="nav-analytics">Analytics</a>
+            <a href="about.html" id="nav-about">About</a>
+            <a href="services.html" id="nav-services">Services</a>
+            <a href="contact.html" id="nav-contact">Contact</a>
+            <a id="logoutLink" href="#">Logout</a>
+        </nav>
+
+        <div class="theme-toggle">
+            <button id="themeBtn" class="theme-btn">🌙</button>
+            <div id="themeMenu" class="theme-menu hidden">
+                <div class="theme-option" data-theme="light">☀️ Light Mode</div>
+                <div class="theme-option" data-theme="dark">🌙 Dark Mode</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- AUTO-ACTIVE NAV HIGHLIGHT -->
+<script>
+    const page = window.location.pathname.split("/").pop();
+
+    const navMap = {
+        "index.html": "nav-home",
+        "dashboard.html": "nav-dashboard",
+        "verify-enhanced.html": "nav-verify",
+        "history.html": "nav-history",
+        "analytics.html": "nav-analytics",
+        "about.html": "nav-about",
+        "services.html": "nav-services",
+        "contact.html": "nav-contact"
+    };
+
+    if (navMap[page]) {
+        document.getElementById(navMap[page]).classList.add("active");
+    }
+</script>
+
+<!-- ABOUT SECTION -->
+<section class="about">
+    <h2>About Aadhaar Authentication</h2>
+
+    <p class="about-intro">
+        AadhaarAuth is an AI-powered solution for accurate Aadhaar card verification,
+        combining advanced technologies with intelligent validation systems.
+    </p>
+
+    <!-- FEATURE CARDS -->
+    <div class="about-cards">
+
+        <div class="about-card">
+            <div class="card-icon">🤖</div>
+            <h3>AI-Powered Technology</h3>
+            <p>Utilizes cutting-edge YOLO object detection and Tesseract OCR for precise document analysis.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="card-icon">⚡</div>
+            <h3>Fast & Accurate</h3>
+            <p>Combines rule-based validation with ML for reliable verification of Aadhaar details.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="card-icon">🛡️</div>
+            <h3>Secure & Reliable</h3>
+            <p>Implements Verhoeff checksum validation and fraud detection for document authenticity.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="card-icon">📊</div>
+            <h3>Flexible Processing</h3>
+            <p>Supports single/batch processing with exportable CSV & JSON outputs.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="card-icon">🔍</div>
+            <h3>Smart Detection</h3>
+            <p>Automatically identifies valid Aadhaar cards and reads QR code data when available.</p>
+        </div>
+
+        <div class="about-card">
+            <div class="card-icon">🌐</div>
+            <h3>Web-Based Solution</h3>
+            <p>A modern interface built for easy organizational integration and usability.</p>
+        </div>
+
+    </div>
+
+    <!-- MISSION SECTION -->
+    <div class="about-mission">
+        <h3>Our Mission</h3>
+        <p>
+            To provide businesses and organizations with a reliable, scalable Aadhaar verification system
+            powered by AI and strong validation mechanisms — ensuring trust, security, and efficiency.
+        </p>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2025 Aadhaar Authentication | All Rights Reserved.</p>
+</footer>
+
+<!-- MAIN JS -->
+<script src="js/script.js"></script>
+
+</body>
+</html>

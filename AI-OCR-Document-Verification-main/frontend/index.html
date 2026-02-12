@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Aadhaar Authentication - Home</title>
+
+    <!-- PREVENT THEME FLASH -->
+    <script>
+        (function () {
+            if (localStorage.getItem("theme") === "dark") {
+                document.documentElement.classList.add("dark");
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+<!-- UNIVERSAL HEADER -->
+<header>
+    <h1 class="logo">Aadhaar Authentication</h1>
+
+    <div class="header-right">
+        <nav>
+            <a href="index.html" id="nav-home">Home</a>
+            <a href="dashboard.html" id="nav-dashboard">Dashboard</a>
+            <a href="verify-enhanced.html" id="nav-verify">Verify</a>
+            <a href="history.html" id="nav-history">History</a>
+            <a href="analytics.html" id="nav-analytics">Analytics</a>
+            <a href="about.html" id="nav-about">About</a>
+            <a href="services.html" id="nav-services">Services</a>
+            <a href="contact.html" id="nav-contact">Contact</a>
+            <a id="logoutLink" href="#">Logout</a>
+        </nav>
+
+        <div class="theme-toggle">
+            <button id="themeBtn" class="theme-btn">🌙</button>
+
+            <div id="themeMenu" class="theme-menu hidden">
+                <div class="theme-option" data-theme="light">☀️ Light Mode</div>
+                <div class="theme-option" data-theme="dark">🌙 Dark Mode</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- AUTO HIGHLIGHT ACTIVE PAGE -->
+<script>
+    const page = window.location.pathname.split("/").pop();
+
+    const navMap = {
+        "index.html": "nav-home",
+        "dashboard.html": "nav-dashboard",
+        "verify-enhanced.html": "nav-verify",
+        "history.html": "nav-history",
+        "analytics.html": "nav-analytics",
+        "about.html": "nav-about",
+        "services.html": "nav-services",
+        "contact.html": "nav-contact"
+    };
+
+    if (navMap[page]) {
+        document.getElementById(navMap[page]).classList.add("active");
+    }
+</script>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <h2>AI-Powered Aadhaar Verification</h2>
+        <p>Fast, accurate Aadhaar verification using YOLO detection, OCR, fraud checks, and smart rule validation.</p>
+        <a href="services.html" class="btn">Start Verification</a>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features">
+        <div>
+            <h3>Instant Checks</h3>
+            <p>Single or batch Aadhaar card verification with high accuracy.</p>
+        </div>
+
+        <div>
+            <h3>Rule-Based Engine</h3>
+            <p>Includes Verhoeff checksum, DOB, gender, and pattern validation.</p>
+        </div>
+
+        <div>
+            <h3>Exportable Reports</h3>
+            <p>Download your verification results in JSON or CSV format.</p>
+        </div>
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2025 Aadhaar Authentication | All Rights Reserved.</p>
+</footer>
+
+<script src="js/script.js"></script>
+
+</body>
+</html>

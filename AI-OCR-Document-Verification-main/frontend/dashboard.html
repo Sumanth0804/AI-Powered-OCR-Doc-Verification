@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Aadhaar Authentication</title>
+
+  <!-- APPLY THEME + SESSION PROTECTION BEFORE PAGE LOAD -->
+  <script>
+    // Prevent theme flicker (safe)
+    (function () {
+      try {
+        if (localStorage.getItem("theme") === "dark") {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (e) { /* ignore */ }
+    })();
+
+    // SESSION PROTECTION (non-fatal during dev; will redirect only when needed)
+    (function () {
+      try {
+        // Only redirect if not running on a dev environment or explicitly allowed.
+        if (!localStorage.getItem("user_name")) {
+          // If you want to prevent redirect while developing locally, comment next line
+          // window.location.href = "login.html";
+        }
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
+
+  <!-- MAIN CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+  <!-- UNIVERSAL HEADER -->
+  <header>
+    <h1 class="logo">Aadhaar Authentication</h1>
+
+    <div class="header-right">
+      <nav>
+        <a href="index.html" id="nav-home">Home</a>
+        <a href="dashboard.html" id="nav-dashboard">Dashboard</a>
+        <a href="verify-enhanced.html" id="nav-verify">Verify</a>
+        <a href="history.html" id="nav-history">History</a>
+        <a href="analytics.html" id="nav-analytics">Analytics</a>
+        <a href="about.html" id="nav-about">About</a>
+        <a href="services.html" id="nav-services">Services</a>
+        <a href="contact.html" id="nav-contact">Contact</a>
+        <a id="logoutLink" href="#">Logout</a>
+      </nav>
+
+      <div class="theme-toggle">
+        <button id="themeBtn" class="theme-btn" aria-haspopup="true" aria-expanded="false">🌙</button>
+        <div id="themeMenu" class="theme-menu hidden" role="menu" aria-hidden="true">
+          <div class="theme-option" data-theme="light" role="menuitem">☀️ Light Mode</div>
+          <div class="theme-option" data-theme="dark" role="menuitem">🌙 Dark Mode</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- WELCOME CARD -->
+    <section class="card">
+      <h2 id="welcomeTitle">Welcome</h2>
+      <p id="welcomeRole">Your dashboard summary</p>
+
+      <div class="dashboard-actions" style="margin-top: 20px;">
+        <a href="verify-enhanced.html" class="btn">Open Enhanced Verify</a>
+        <a href="history.html" class="btn">Open History</a>
+        <a href="analytics.html" class="btn">Open Analytics</a>
+      </div>
+    </section>
+
+    <!-- QUICK STATS -->
+    <section class="card">
+      <h3>Quick Stats</h3>
+      <div id="quickStats" style="margin-top: 10px;">Loading…</div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 Aadhaar Authentication | All Rights Reserved.</p>
+  </footer>
+
+  <!-- LIBRARIES -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- MAIN JS (optional external) -->
+  <script src="js/script.js"></script>
+
+  <script>
+    /* =====================================
+       DASHBOARD LOAD — USER + STATS
+       ====================================== */
+
+    // Ensure DOM is ready before manipulating elements
+    document.addEventListener("DOMContentLoaded", () => {
+      // Auto-highlight nav based on current page
+      (function highlightNav() {
+        try {
+          const page = window.location.pathname.split("/").pop() || "dashboard.html";
+          const mapping = {
+            "index.html": "nav-home",
+            "dashboard.html": "nav-dashboard",
+            "verify-enhanced.html": "nav-verify",
+            "history.html": "nav-history",
+            "analytics.html": "nav-analytics",
+            "about.html": "nav-about",
+            "services.html": "nav-services",
+            "contact.html": "nav-contact"
+          };
+          if (mapping[page]) {
+            const el = document.getElementById(mapping[page]);
+            if (el) el.classList.add("active");
+          }
+        } catch (e) { /* ignore highlight errors */ }
+      })();
+
+      // Load user & role first (used in title)
+      const user = (function () {
+        try { return localStorage.getItem("user_name") || "User"; } catch (e) { return "User"; }
+      })();
+      const role = (function () {
+        try { return localStorage.getItem("user_role") || "User"; } catch (e) { return "User"; }
+      })();
+
+      // Set a clear, correct document title including the page and user (keeps tab meaningful)
+      try {
+        document.title = `Dashboard - Aadhaar Authentication${user ? " • " + user : ""}`;
+      } catch (e) { /* ignore */ }
+
+      // Update welcome area
+      try {
+        const welcomeEl = document.getElementById("welcomeTitle");
+        const roleEl = document.getElementById("welcomeRole");
+        if (welcomeEl) welcomeEl.textContent = `Welcome, ${user}`;
+        if (roleEl) roleEl.textContent = `Role: ${role}`;
+      } catch (e) { /* ignore */ }
+
+      // Load history data and render quick stats
+      try {
+        const historyData = JSON.parse(localStorage.getItem("aadhaar_history") || "[]");
+        const total = Array.isArray(historyData) ? historyData.length : 0;
+
+        // support different status fields (overall_assessment / status)
+        const getStatus = (item) => (item.status || item.overall_assessment || "").toString();
+
+        const valid = (Array.isArray(historyData) ? historyData : []).filter(h => getStatus(h).toLowerCase().includes("valid")).length;
+        const non = (Array.isArray(historyData) ? historyData : []).filter(h => getStatus(h).toLowerCase().includes("non")).length;
+        const errors = (Array.isArray(historyData) ? historyData : []).filter(h => getStatus(h).toLowerCase().includes("error")).length;
+
+        const qs = document.getElementById("quickStats");
+        if (qs) {
+          qs.innerHTML = `
+            <p><strong>Total Verifications:</strong> ${total}</p>
+            <p><strong>Valid Aadhaar:</strong> ${valid}</p>
+            <p><strong>Non-Aadhaar:</strong> ${non}</p>
+            <p><strong>Errors:</strong> ${errors}</p>
+          `;
+        }
+      } catch (e) {
+        // show fallback UI
+        const qs = document.getElementById("quickStats");
+        if (qs) qs.innerHTML = `<p>Unable to load stats.</p>`;
+        console.warn("Failed to load quick stats", e);
+      }
+
+      // Logout handler (safe)
+      try {
+        const logoutLink = document.getElementById("logoutLink");
+        if (logoutLink) {
+          logoutLink.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            try {
+              localStorage.removeItem("user_name");
+              localStorage.removeItem("user_role");
+            } catch (e) { /* ignore */ }
+            if (window.Swal) {
+              Swal.fire("Logged Out", "Session cleared.", "success").then(() => window.location.href = "login.html");
+            } else {
+              window.location.href = "login.html";
+            }
+          });
+        }
+      } catch (e) { /* ignore logout wiring errors */ }
+
+      // Theme toggle wiring (non-blocking)
+      (function themeWire() {
+        try {
+          const btn = document.getElementById('themeBtn');
+          const menu = document.getElementById('themeMenu');
+          if (!btn || !menu) return;
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('hidden');
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', String(!expanded));
+            menu.setAttribute('aria-hidden', String(menu.classList.contains('hidden')));
+          });
+          menu.querySelectorAll('.theme-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+              const t = e.currentTarget.dataset.theme;
+              try {
+                if (t === 'dark') {
+                  document.documentElement.classList.add('dark');
+                  localStorage.setItem('theme', 'dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                  localStorage.setItem('theme', 'light');
+                }
+              } catch (e) { /* ignore theme set errors */ }
+              menu.classList.add('hidden');
+              btn.setAttribute('aria-expanded', 'false');
+              menu.setAttribute('aria-hidden', 'true');
+            });
+          });
+        } catch (e) { /* ignore theme wiring errors */ }
+      })();
+
+    }); // DOMContentLoaded
+  </script>
+
+</body>
+</html>

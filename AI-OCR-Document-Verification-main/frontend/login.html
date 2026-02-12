@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Aadhaar Authentication</title>
+
+    <!-- APPLY SAVED THEME BEFORE PAGE LOAD -->
+    <script>
+        (function () {
+            if (localStorage.getItem("theme") === "dark") {
+                document.documentElement.classList.add("dark");
+            }
+        })();
+
+        /* ===============================================
+           AUTO-REDIRECT → If user already logged in
+        =============================================== */
+        (function () {
+            const user = localStorage.getItem("user_name");
+            if (user) {
+                window.location.href = "dashboard.html";
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+    <!-- LOGIN CONTAINER -->
+    <main class="center-card" style="padding-top: 50px; max-width: 420px;">
+
+        <h2 style="text-align:center; margin-bottom:20px;">
+            Aadhaar Authentication — Login
+        </h2>
+
+        <form id="loginForm" class="form-card">
+
+            <label>
+                Username
+                <input id="username" required autocomplete="off" />
+            </label>
+
+            <label>
+                Password
+                <input id="password" type="password" required autocomplete="off" />
+            </label>
+
+            <label>
+                Role
+                <select id="role">
+                    <option value="admin">Admin</option>
+                    <option value="analyst">Analyst</option>
+                    <option value="viewer">Viewer</option>
+                </select>
+            </label>
+
+            <div style="display:flex; gap:10px; margin-top:16px;">
+                <button type="submit" class="btn" style="flex:1;">Login</button>
+                <button type="button" id="demoBtn" class="btn" style="flex:1; background:#666;">
+                    Demo Users
+                </button>
+            </div>
+
+        </form>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 Aadhaar Authentication | All Rights Reserved.</p>
+    </footer>
+
+    <!-- SWEETALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- MAIN SCRIPT -->
+    <script src="js/script.js"></script>
+
+    <script>
+        /* ======================================================
+           DEMO LOGIN CREDENTIALS
+        ====================================================== */
+        const DEMO_USERS = {
+            admin: "adminpass",
+            analyst: "analystpass",
+            viewer: "viewerpass"
+        };
+
+        /* ======================================================
+           LOGIN PROCESS
+        ====================================================== */
+        document.getElementById("loginForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const role = document.getElementById("role").value;
+
+            if (!username || !password) {
+                Swal.fire("Missing Information", "Both fields are required.", "warning");
+                return;
+            }
+
+            // Validate demo password by role
+            if (DEMO_USERS[role] !== password) {
+                Swal.fire("Invalid Login", "Incorrect password for selected role.", "error");
+                return;
+            }
+
+            // Save login data (used everywhere)
+            localStorage.setItem("user_name", username);
+            localStorage.setItem("user_role", role);
+
+            Swal.fire({
+                title: "Login Successful",
+                text: "Redirecting to Dashboard...",
+                icon: "success",
+                timer: 1000,
+                showConfirmButton: false
+            });
+
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 900);
+        });
+
+        /* ======================================================
+           DEMO USERS BUTTON
+        ====================================================== */
+        document.getElementById("demoBtn").addEventListener("click", () => {
+            Swal.fire({
+                title: "Demo Accounts",
+                html: `
+                    <b>Admin:</b> admin / adminpass<br>
+                    <b>Analyst:</b> analyst / analystpass<br>
+                    <b>Viewer:</b> viewer / viewerpass
+                `,
+                icon: "info"
+            });
+        });
+    </script>
+
+</body>
+</html>

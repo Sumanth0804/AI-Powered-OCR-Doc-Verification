@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Services - Aadhaar Authentication</title>
+
+    <!-- FIX FLICKER -->
+    <script>
+        (function () {
+            if (localStorage.getItem("theme") === "dark") {
+                document.documentElement.classList.add("dark");
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+<!-- UNIVERSAL HEADER -->
+<header>
+    <h1 class="logo">Aadhaar Authentication</h1>
+
+    <div class="header-right">
+        <nav>
+            <a href="index.html" id="nav-home">Home</a>
+            <a href="dashboard.html" id="nav-dashboard">Dashboard</a>
+            <a href="verify-enhanced.html" id="nav-verify">Verify</a>
+            <a href="history.html" id="nav-history">History</a>
+            <a href="analytics.html" id="nav-analytics">Analytics</a>
+            <a href="about.html" id="nav-about">About</a>
+            <a href="services.html" id="nav-services">Services</a>
+            <a href="contact.html" id="nav-contact">Contact</a>
+            <a id="logoutLink" href="#">Logout</a>
+        </nav>
+
+        <div class="theme-toggle">
+            <button id="themeBtn" class="theme-btn">🌙</button>
+
+            <div id="themeMenu" class="theme-menu hidden">
+                <div class="theme-option" data-theme="light">☀️ Light Mode</div>
+                <div class="theme-option" data-theme="dark">🌙 Dark Mode</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- AUTO ACTIVE HIGHLIGHT -->
+<script>
+    const page = window.location.pathname.split("/").pop();
+
+    const navMap = {
+        "index.html": "nav-home",
+        "dashboard.html": "nav-dashboard",
+        "verify-enhanced.html": "nav-verify",
+        "history.html": "nav-history",
+        "analytics.html": "nav-analytics",
+        "about.html": "nav-about",
+        "services.html": "nav-services",
+        "contact.html": "nav-contact"
+    };
+
+    if (navMap[page]) {
+        document.getElementById(navMap[page]).classList.add("active");
+    }
+</script>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+
+    <!-- SERVICES INTRO -->
+    <section class="services-intro">
+        <h2>Our Aadhaar Verification Services</h2>
+        <p>
+            Choose the type of Aadhaar verification you need.
+            Our system automatically checks whether uploaded images are genuine Aadhaar documents.
+        </p>
+    </section>
+
+    <!-- SERVICE CARDS -->
+    <div class="service-cards">
+
+        <div class="service-card" data-service="single">
+            <div class="service-icon">🔍</div>
+            <h3>Single Verification</h3>
+            <p>Verify a single Aadhaar card with OCR, fraud detection, and rule-based checks.</p>
+            <button class="btn">Select</button>
+        </div>
+
+        <div class="service-card" data-service="batch">
+            <div class="service-icon">📦</div>
+            <h3>Batch Verification</h3>
+            <p>Upload a ZIP folder containing multiple Aadhaar card images for bulk processing.</p>
+            <button class="btn">Select</button>
+        </div>
+
+    </div>
+
+    <!-- UPLOAD SECTION -->
+    <section class="upload-section" id="uploadSection" style="display: none;">
+
+        <h3 id="uploadTitle">Single Aadhaar Verification</h3>
+        <p id="uploadDescription">
+            Upload Aadhaar front/back images. The system automatically checks document authenticity.
+        </p>
+
+        <div class="service-buttons">
+            <button id="singleBtn" class="btn active">Single Verification</button>
+            <button id="batchBtn" class="btn">Batch Verification</button>
+        </div>
+
+        <form id="verifyForm">
+
+            <!-- SINGLE UPLOAD -->
+            <div id="singleUpload">
+                <div class="form-group">
+                    <label for="front">Aadhaar Front Image *</label>
+                    <input type="file" id="front" name="front" accept=".jpg,.jpeg,.png" required />
+                    <p class="note">Upload the front side of the Aadhaar card.</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="back">Aadhaar Back Image (Optional)</label>
+                    <input type="file" id="back" name="back" accept=".jpg,.jpeg,.png" />
+                    <p class="note">Back side contains address + QR data.</p>
+                </div>
+            </div>
+
+            <!-- BATCH UPLOAD -->
+            <div id="batchUpload" style="display: none;">
+                <div class="form-group">
+                    <label for="zip">Batch ZIP File *</label>
+                    <input type="file" id="zip" name="zip" accept=".zip" />
+                </div>
+                <p class="note">Upload a ZIP containing Aadhaar images.</p>
+            </div>
+
+            <!-- QR CHECK OPTION -->
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="qr">
+                    Enable QR Code Check
+                </label>
+            </div>
+
+            <button type="submit" class="btn">Run Verification</button>
+        </form>
+
+        <div class="loader" id="loadingSpinner"></div>
+    </section>
+
+    <!-- RESULTS -->
+    <h3 style="margin-top: 40px;">Verification Results</h3>
+
+    <div id="verificationResults" class="result-container">
+        <p id="defaultResultMessage">
+            Select a service and upload files to begin verification.
+        </p>
+    </div>
+
+</main>
+
+<!-- MODAL -->
+<div id="resultModal" class="modal">
+    <div class="modal-content-wrapper">
+        <span class="close-btn" id="closeModal">&times;</span>
+        <div id="modalContent"></div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2025 Aadhaar Authentication | All Rights Reserved.</p>
+</footer>
+
+<script src="js/script.js"></script>
+
+</body>
+</html>
