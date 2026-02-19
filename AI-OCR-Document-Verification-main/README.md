@@ -283,8 +283,8 @@ GET /
 
 ## Project By
 
-- **M.R.TejeshwarReddy**
-- **Contact: tejeshwarreddy2424@gmail.com**
+- **Nagireddy Venkata Sumanth Reddy**
+- **Contact: sumanthnagireddy08@gmail.com**
 
 ## 📄 License
 
